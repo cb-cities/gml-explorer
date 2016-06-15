@@ -1,4 +1,3 @@
---module RoadLinks
 module RoadLinkRCI
   ( root
   ) where
@@ -14,17 +13,6 @@ import MealyMachine
 import Toolkit
 
 
---data RoadLink = RL
---    { rlIndex        :: Int
---    , rlTOID         :: Text
---    , rlTerm         :: Maybe Text
---    , rlNature       :: Maybe Text
---    , rlPolyline     :: Maybe [Double]
---    , rlNegativeNode :: Maybe Text
---    , rlPositiveNode :: Maybe Text
---    }
---  deriving (Eq, Ord, Show)
-
 data RoadLinkRCI = RLR
     { rlrIndex        :: Int
     , rlrTOID         :: Text
@@ -34,22 +22,10 @@ data RoadLinkRCI = RLR
     , rlrNegativeNode :: Maybe Text
     , rlrPositiveNode :: Maybe Text
     , rlrGID          :: Maybe Text
-    , rlrLV3          :: Maybe [Double]
+    , rlrLV3          :: Maybe Double
     }
   deriving (Eq, Ord, Show)
 
-
---instance ToJSON RoadLink where
---  toJSON RL{..} =
---      J.object
---        [ "index"        .= rlIndex
---        , "toid"         .= rlTOID
---        , "term"         .= rlTerm
---        , "nature"       .= rlNature
---        , "polyline"     .= rlPolyline
---        , "negativeNode" .= rlNegativeNode
---        , "positiveNode" .= rlPositiveNode
---        ]
 
 instance ToJSON RoadLinkRCI where
   toJSON RLR{..} =
@@ -66,17 +42,6 @@ instance ToJSON RoadLinkRCI where
         ]
 
 
---newRL :: Int -> Text -> RoadLink
---newRL index toid = RL
---    { rlIndex        = index
---    , rlTOID         = toid
---    , rlTerm         = Nothing
---    , rlNature       = Nothing
---    , rlPolyline     = Nothing
---    , rlNegativeNode = Nothing
---    , rlPositiveNode = Nothing
---    }
-
 newRLR :: Int -> Text -> RoadLinkRCI
 newRLR index toid = RLR
     { rlrIndex        = index
@@ -90,16 +55,6 @@ newRLR index toid = RLR
     , rlrLV3          = Nothing
     }
 
-
---validRL :: RoadLink -> Bool
---validRL RL{..} =
---       rlTerm         /= Nothing
---    && rlNature       /= Nothing
---    && rlPolyline     /= Nothing && l >= 4 && l `mod` 2 == 0
---    && rlNegativeNode /= Nothing
---    && rlPositiveNode /= Nothing
---  where
---    l = length (fromJust rlPolyline)
 
 validRLR :: RoadLinkRCI -> Bool
 validRLR RLR{..} =
@@ -115,18 +70,11 @@ validRLR RLR{..} =
 root :: Int -> Transition
 root index (StartElement "osgb:networkMember" _) =
     await (networkMember index)
+    -- returns the order number of the <osgb:networkMember> element
 root index _ =
     await (root index)
 -- No change
 
-
---networkMember :: Int -> Transition
---networkMember index (EndElement "osgb:networkMember") =
---    await (root index)
---networkMember index (StartElement "osgb:RoadLink" attrs) =
---    await (roadLink (newRL index (getTOID attrs)))
---networkMember index _ =
---    await (networkMember index)
 
 networkMember :: Int -> Transition
 networkMember index (EndElement "osgb:networkMember") =
@@ -137,38 +85,6 @@ networkMember index _ =
     await (networkMember index)
 
 
---roadLink :: RoadLink -> Transition
---roadLink rl (EndElement "osgb:RoadLink")
---  | validRL rl =
---        yield rl (networkMember (rlIndex rl + 1))
---  | otherwise =
---        error ("roadLink: invalid osgb:RoadLink: " ++ show rl)
---roadLink rl (StartElement "osgb:descriptiveTerm" _)
---  | rlTerm rl == Nothing =
---        await (term none rl)
---  | otherwise =
---        error "roadLink: expected 1 osgb:descriptiveTerm"
---roadLink rl (StartElement "osgb:natureOfRoad" _)
---  | rlNature rl == Nothing =
---        await (nature none rl)
---  | otherwise =
---        error "roadLink: expected 1 osgb:natureOfRoad"
---roadLink rl (StartElement "osgb:polyline" _)
---  | rlPolyline rl == Nothing =
---        await (polyline rl)
---  | otherwise =
---        error "roadLink: expected 1 osgb:polyline"
---roadLink rl (StartElement "osgb:directedNode" attrs) =
---    case (rlNegativeNode rl, rlPositiveNode rl, getDirectedNode attrs) of
---      (Nothing, _, Left nn) ->
---        await (roadLink rl {rlNegativeNode = Just nn})
---      (_, Nothing, Right pn) ->
---        await (roadLink rl {rlPositiveNode = Just pn})
---      _ ->
---        error "roadLink: expected 2 osgb:directedNode"
---roadLink rl _ =
---    await (roadLink rl)
-
 roadLink :: RoadLinkRCI -> Transition
 roadLink rlr (EndElement "osgb:RoadLink")
   | validRLR rlr =
@@ -178,8 +94,8 @@ roadLink rlr (EndElement "osgb:RoadLink")
 roadLink rlr (StartElement "osgb:descriptiveTerm" _)
   | rlrTerm rlr == Nothing =
         await (term none rlr)
-  | otherwise =
-        error "roadLink: expected 1 osgb:descriptiveTerm"
+  | otherwise = --means rlrTerm rlr is not Nothing, e.g., there are two <osgb:descriptive Term> elements
+        error "roadLink: expected 1 osgb:descriptiveTerm" --other than more than 1
 roadLink rlr (StartElement "osgb:natureOfRoad" _)
   | rlrNature rlr == Nothing =
         await (nature none rlr)
@@ -202,7 +118,12 @@ roadLink rlr (StartElement "ogr:gid" _)
   | rlrGID rlr == Nothing =
         await (gid none rlr)
   | otherwise =
-        error "roadLink: expect 1 ogr:gid"
+        error "roadLink: expect 1 ogr:gid for this link in total"
+roadLink rlr (StartElement "ogr:lv3" _)
+  | rlrLV3 rlr == Nothing =
+        await (lv3 none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:lv3 for this link in total"
 roadLink rlr _ =
     await (roadLink rlr)
 
@@ -263,3 +184,11 @@ coordinates parts rlr (CharacterData part) =
     await (coordinates (parts <> part) rlr)
 coordinates parts rlr _ =
     await (coordinates parts rlr)
+
+lv3 :: Builder -> RoadLinkRCI -> Transition
+lv3 parts rlr (EndElement "ogr:lv3") =
+  await (roadLink rlr {rlrLV3 = Just (decodeDouble (build parts))})
+lv3 parts rlr (CharacterData part) =
+  await (lv3 (parts <> part) rlr)
+lv3 parts rlr _ =
+  await (lv3 parts rlr)
