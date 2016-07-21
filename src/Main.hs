@@ -15,7 +15,7 @@ import qualified RoadLinks
 import qualified RoadNodes
 import qualified FerryLinks
 import qualified FerryNodes
--- Newly added
+-- Added for RCI
 import qualified RoadLinkRCI
 
 

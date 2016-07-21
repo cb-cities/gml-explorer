@@ -19,7 +19,7 @@ data Command =
   | RoadNodes
   | FerryLinks
   | FerryNodes
-  -- Newly added
+  -- Added for RCI
   | RoadLinkRCI
   deriving (Eq, Ord, Show)
 

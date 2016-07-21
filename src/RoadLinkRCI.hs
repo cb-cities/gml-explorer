@@ -22,14 +22,20 @@ data RoadLinkRCI = RLR
     , rlrNegativeNode :: Maybe Text
     , rlrPositiveNode :: Maybe Text
 
-    --Below are RCI related information
-    , rlrGID          :: Maybe Text
+    --Added for RCI
+    , rlrRoadID       :: Maybe Int
+    , rlrStCha        :: Maybe Double
+    , rlrEndCh        :: Maybe Double
+    , rlrRCI          :: Maybe Double
     , rlrLV3          :: Maybe Double
     , rlrLV10         :: Maybe Double
     , rlrLLRT         :: Maybe Double
     , rlrLRRT         :: Maybe Double
     , rlrLTRC         :: Maybe Double
     , rlrLLTX         :: Maybe Double
+    , rlrLCRV         :: Maybe Double
+    , rlrLLRD         :: Maybe Double
+    , rlrLRRD         :: Maybe Double
     }
   deriving (Eq, Ord, Show)
 
@@ -46,13 +52,19 @@ instance ToJSON RoadLinkRCI where
         , "positiveNode" .= rlrPositiveNode
 
         --Below are RCI related outputs
-        , "gid"          .= rlrGID
+        , "roadid"       .= rlrRoadID
+        , "stcha"        .= rlrStCha
+        , "endch"        .= rlrEndCh
+        , "rci"          .= rlrRCI
         , "lv3"          .= rlrLV3
         , "lv10"         .= rlrLV10
         , "llrt"         .= rlrLLRT
         , "lrrt"         .= rlrLRRT
         , "ltrc"         .= rlrLTRC
         , "lltx"         .= rlrLLTX
+        , "lcrv"         .= rlrLCRV
+        , "llrd"         .= rlrLLRD
+        , "lrrd"         .= rlrLRRD
         ]
 
 
@@ -67,13 +79,19 @@ newRLR index toid = RLR
     , rlrPositiveNode = Nothing
 
     --Below are RCI related information
-    , rlrGID          = Nothing
+    , rlrRoadID       = Nothing
+    , rlrStCha        = Nothing
+    , rlrEndCh        = Nothing
+    , rlrRCI          = Nothing
     , rlrLV3          = Nothing
     , rlrLV10         = Nothing
     , rlrLLRT         = Nothing
     , rlrLRRT         = Nothing
     , rlrLTRC         = Nothing
     , rlrLLTX         = Nothing
+    , rlrLCRV         = Nothing
+    , rlrLLRD         = Nothing
+    , rlrLRRD         = Nothing
     }
 
 
@@ -137,11 +155,26 @@ roadLink rlr (StartElement "osgb:directedNode" attrs) =
         error "roadLink: expected 2 osgb:directedNode"
 
 --Below are for parsing RCI related elements
-roadLink rlr (StartElement "ogr:gid" _)
-  | rlrGID rlr == Nothing =
-        await (gid none rlr)
+roadLink rlr (StartElement "ogr:road_id" _)
+  | rlrRoadID rlr == Nothing =
+        await (roadid none rlr)
   | otherwise =
-        error "roadLink: expect 1 ogr:gid for this link in total"
+        error "roadLink: expect 1 ogr:road_id for this link in total"
+roadLink rlr (StartElement "ogr:st_cha" _)
+  | rlrStCha rlr == Nothing =
+        await (stcha none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:st_cha for this link in total"
+roadLink rlr (StartElement "ogr:end_ch" _)
+  | rlrEndCh rlr == Nothing =
+        await (endch none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:end_ch for this link in total"
+roadLink rlr (StartElement "ogr:rci" _)
+  | rlrRCI rlr == Nothing =
+        await (rci none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:rci for this link in total"
 roadLink rlr (StartElement "ogr:lv3" _)
   | rlrLV3 rlr == Nothing =
         await (lv3 none rlr)
@@ -172,6 +205,21 @@ roadLink rlr (StartElement "ogr:lltx" _)
         await (lltx none rlr)
   | otherwise =
         error "roadLink: expect 1 ogr:lltx for this link in total"
+roadLink rlr (StartElement "ogr:lcrv" _)
+  | rlrLCRV rlr == Nothing =
+        await (lcrv none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:lcrv for this link in total"
+roadLink rlr (StartElement "ogr:llrd" _)
+  | rlrLLRD rlr == Nothing =
+        await (llrd none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:llrd for this link in total"
+roadLink rlr (StartElement "ogr:lrrd" _)
+  | rlrLRRD rlr == Nothing =
+        await (lrrd none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:lrrd for this link in total"
 roadLink rlr _ =
     await (roadLink rlr)
 
@@ -228,14 +276,37 @@ coordinates parts rlr _ =
 
 
 --Below are RCI related functions
-gid :: Builder -> RoadLinkRCI -> Transition
-gid parts rlr (EndElement "ogr:gid") =
-  await (roadLink rlr {rlrGID = Just (build parts)})
-gid parts rlr (CharacterData part) =
-  await (gid (parts <> part) rlr)
-gid parts rlr _ =
-  await (gid parts rlr)
+roadid :: Builder -> RoadLinkRCI -> Transition
+roadid parts rlr (EndElement "ogr:road_id") =
+  await (roadLink rlr {rlrRoadID = Just (decodeInt (build parts))})
+roadid parts rlr (CharacterData part) =
+  await (roadid (parts <> part) rlr)
+roadid parts rlr _ =
+  await (roadid parts rlr)
 
+stcha :: Builder -> RoadLinkRCI -> Transition
+stcha parts rlr (EndElement "ogr:st_cha") =
+  await (roadLink rlr {rlrStCha = Just (decodeDouble (build parts))})
+stcha parts rlr (CharacterData part) =
+  await (stcha (parts <> part) rlr)
+stcha parts rlr _ =
+  await (stcha parts rlr)
+
+end_ch :: Builder -> RoadLinkRCI -> Transition
+end_ch parts rlr (EndElement "ogr:end_ch") =
+  await (roadLink rlr {rlrEndCh = Just (decodeDouble (build parts))})
+end_ch parts rlr (CharacterData part) =
+  await (end_ch (parts <> part) rlr)
+end_ch parts rlr _ =
+  await (end_ch parts rlr)
+
+rci :: Builder -> RoadLinkRCI -> Transition
+rci parts rlr (EndElement "ogr:rci") =
+  await (roadLink rlr {rlrRCI = Just (decodeDouble (build parts))})
+rci parts rlr (CharacterData part) =
+  await (rci (parts <> part) rlr)
+rci parts rlr _ =
+  await (rci parts rlr)
 
 lv3 :: Builder -> RoadLinkRCI -> Transition
 lv3 parts rlr (EndElement "ogr:lv3") =
@@ -289,3 +360,29 @@ lltx parts rlr (CharacterData part) =
   await (lltx (parts <> part) rlr)
 lltx parts rlr _ =
   await (lltx parts rlr)
+
+lcrv :: Builder -> RoadLinkRCI -> Transition
+lcrv parts rlr (EndElement "ogr:lcrv") =
+  await (roadLink rlr {rlrLCRV = Just (decodeDouble (build parts))})
+lcrv parts rlr (CharacterData part) =
+  await (lcrv (parts <> part) rlr)
+lcrv parts rlr _ =
+  await (lcrv parts rlr)
+
+
+llrd :: Builder -> RoadLinkRCI -> Transition
+llrd parts rlr (EndElement "ogr:llrd") =
+  await (roadLink rlr {rlrLLRD = Just (decodeDouble (build parts))})
+llrd parts rlr (CharacterData part) =
+  await (llrd (parts <> part) rlr)
+llrd parts rlr _ =
+  await (llrd parts rlr)
+
+
+lrrd :: Builder -> RoadLinkRCI -> Transition
+lrrd parts rlr (EndElement "ogr:lrrd") =
+  await (roadLink rlr {rlrLRRD = Just (decodeDouble (build parts))})
+lrrd parts rlr (CharacterData part) =
+  await (lrrd (parts <> part) rlr)
+lrrd parts rlr _ =
+  await (lrrd parts rlr)
