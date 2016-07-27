@@ -52,9 +52,9 @@ instance ToJSON RoadLinkRCI where
         , "positiveNode" .= rlrPositiveNode
 
         --Below are RCI related outputs
-        , "roadid"       .= rlrRoadID
-        , "stcha"        .= rlrStCha
-        , "endch"        .= rlrEndCh
+        , "road_id"       .= rlrRoadID
+        , "st_cha"        .= rlrStCha
+        , "end_ch"        .= rlrEndCh
         , "rci"          .= rlrRCI
         , "lv3"          .= rlrLV3
         , "lv10"         .= rlrLV10
@@ -292,13 +292,13 @@ stcha parts rlr (CharacterData part) =
 stcha parts rlr _ =
   await (stcha parts rlr)
 
-end_ch :: Builder -> RoadLinkRCI -> Transition
-end_ch parts rlr (EndElement "ogr:end_ch") =
+endch :: Builder -> RoadLinkRCI -> Transition
+endch parts rlr (EndElement "ogr:end_ch") =
   await (roadLink rlr {rlrEndCh = Just (decodeDouble (build parts))})
-end_ch parts rlr (CharacterData part) =
-  await (end_ch (parts <> part) rlr)
-end_ch parts rlr _ =
-  await (end_ch parts rlr)
+endch parts rlr (CharacterData part) =
+  await (endch (parts <> part) rlr)
+endch parts rlr _ =
+  await (endch parts rlr)
 
 rci :: Builder -> RoadLinkRCI -> Transition
 rci parts rlr (EndElement "ogr:rci") =
