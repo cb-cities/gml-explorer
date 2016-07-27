@@ -42,15 +42,15 @@ encodeJSON =
     L.toStrict . J.encode
 
 -- Added for RCI
-decodeInt :: Text -> Int
-decodeInt t =
-    case T.int t of
-      Right (i, "") ->
-        i
-      Right _ ->
-        error ("decodeInt: invalid integer: " ++ show t)
-      Left msg ->
-        error ("decodeInt: " ++ msg ++ ": " ++ show t)
+--decodeInt :: Text -> Int
+--decodeInt t =
+--    case T.int t of
+--      Right (i, "") ->
+--        i
+--      Right _ ->
+--        error ("decodeInt: invalid integer: " ++ show t)
+--      Left msg ->
+--        error ("decodeInt: " ++ msg ++ ": " ++ show t)
 
 decodeDouble :: Text -> Double
 decodeDouble t =

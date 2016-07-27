@@ -23,7 +23,7 @@ data RoadLinkRCI = RLR
     , rlrPositiveNode :: Maybe Text
 
     --Added for RCI
-    , rlrRoadID       :: Maybe Int
+    , rlrRoadID       :: Maybe Double  --Int
     , rlrStCha        :: Maybe Double
     , rlrEndCh        :: Maybe Double
     , rlrRCI          :: Maybe Double
@@ -278,7 +278,7 @@ coordinates parts rlr _ =
 --Below are RCI related functions
 roadid :: Builder -> RoadLinkRCI -> Transition
 roadid parts rlr (EndElement "ogr:road_id") =
-  await (roadLink rlr {rlrRoadID = Just (decodeInt (build parts))})
+  await (roadLink rlr {rlrRoadID = Just (decodeDouble (build parts))})
 roadid parts rlr (CharacterData part) =
   await (roadid (parts <> part) rlr)
 roadid parts rlr _ =
