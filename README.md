@@ -1,24 +1,17 @@
 _gml-explorer_
 ==============
 
-TODO
-
 
 Usage
 -----
 
 First, download the project source and data files:
 
-```
-git clone https://github.com/mietek/gml-explorer
-```
-
-The following instructions assume the project is located in the current working directory.
+The following instructions assume the project is in the current working directory.
 
 ```
 cd gml-explorer
 ```
-
 
 ### Installing dependencies
 

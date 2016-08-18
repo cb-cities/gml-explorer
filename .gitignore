@@ -2,3 +2,5 @@
 cabal.sandbox.config
 dist
 out
+.DS_Store
+
