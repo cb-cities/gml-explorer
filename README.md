@@ -7,7 +7,7 @@ Usage
 
 First, download the project source and data files:
 
-The following instructions assume the project is located in the current working directory.
+The following instructions assume the project is in the current working directory.
 
 ```
 cd gml-explorer
