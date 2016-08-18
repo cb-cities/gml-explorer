@@ -76,7 +76,6 @@ Option             | Description
 `-o OUTPUT_DIR`    | Output directory (default: `out`)
 `-s MAX_FILE_SIZE` | Maximum size of file to output (default: `31457280`)
 
-
 Command        | Description
 ------------   | -----------
 `roads`        | Output OS Road geometry
