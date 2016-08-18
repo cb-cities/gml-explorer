@@ -19,6 +19,8 @@ data Command =
   | RoadNodes
   | FerryLinks
   | FerryNodes
+  -- Added for RCI
+  | RoadLinkRCI
   deriving (Eq, Ord, Show)
 
 
@@ -74,6 +76,8 @@ parseCommand =
       <> command "roadnodes" "Output OS RoadNode geometry" RoadNodes
       <> command "ferrylinks" "Output OS FerryLink geometry" FerryLinks
       <> command "ferrynodes" "Output OS FerryNode geometry" FerryNodes
+      -- Newly added
+      <> command "roadlinkrci" "Output OS RoadRCI geometry" RoadLinkRCI
 
 
 command :: String -> String -> Command -> P.Mod P.CommandFields Command

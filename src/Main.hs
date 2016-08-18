@@ -15,6 +15,8 @@ import qualified RoadLinks
 import qualified RoadNodes
 import qualified FerryLinks
 import qualified FerryNodes
+-- Added for RCI
+import qualified RoadLinkRCI
 
 
 main :: IO ()
@@ -39,6 +41,9 @@ dispatch FerryLinks =
     FerryLinks.root 1
 dispatch FerryNodes =
     FerryNodes.root 1
+-- Newly added
+dispatch RoadLinkRCI =
+    RoadLinkRCI.root 1
 
 
 writeFiles :: FilePath -> Command -> [ByteString] -> Int -> IO ()
