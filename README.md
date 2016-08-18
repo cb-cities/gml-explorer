@@ -13,7 +13,6 @@ The following instructions assume the project is located in the current working 
 cd gml-explorer
 ```
 
-
 ### Installing dependencies
 
 The project is written in [Haskell](https://www.haskell.org/).  To build the project, the GHC compiler and the [`cabal-install`](https://www.haskell.org/cabal/) tool must be installed on the local machine.
