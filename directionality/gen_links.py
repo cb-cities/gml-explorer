@@ -32,13 +32,13 @@ for directed_link in directed_links:
 		"term": directed_link['link_restrictions']['link']['term'],
 		"polyline": polyline_reverse,
 		"positiveNode" : directed_link['link_restrictions']['link']['negativeNode'],
-		"nature": directed_link['link_restrictions']['link']['nature'] }
-		# Need to fix indexing
-		link[u'index'] = 1
+		"nature": directed_link['link_restrictions']['link']['nature'],
+		"directed": True }
 		generated_links.append(link)
 	else:
 		# In the correct orientation, requiring no manipulation
 		directed_link = link
+		link['directed'] = True
 		generated_links.append(link)
 
 for undirected_link in undirected_links:
@@ -58,9 +58,8 @@ for undirected_link in undirected_links:
 	"term": undirected_link['term'],
 	"polyline": polyline_reverse,
 	"positiveNode" : undirected_link['negativeNode'],
-	"nature": undirected_link['nature'] }
-	# Need to fix indexing
-	negativeLink[u'index'] = 1
+	"nature": undirected_link['nature'],
+	"directed": False }
 	generated_links.append(negativeLink)
 	generated_links.append(positiveLink)
 
@@ -88,6 +87,6 @@ print "# Splitting into smaller json.gz files"
 chunkSize = 100000
 for i in xrange(0, len(generated_links), chunkSize):
 	with gzip.open('./out/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
-		json.dump(generated_links[i:i+chunkSize], outfile)
+		json.dump(generated_links[i:i+chunkSize], outfile, indent=0)
 
 print "# Complete"
