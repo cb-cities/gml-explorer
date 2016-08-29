@@ -12,7 +12,7 @@ except ImportError, e:
 x = time.time()
 print 'loading gml file'
 
-gml_file = gzip.open("/Users/gerardcasey/itn_repository/London/gml/mastermap-itn_1445595_0_RRI.gml.gz")
+gml_file = gzip.open("/Users/gerardcasey/itn_repository/Undirected_graphs/London/gml/mastermap-itn_1445496_0.gml.gz")
 
 # Read RRI data
 e = xml.etree.ElementTree.parse(gml_file).getroot()

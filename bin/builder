@@ -1,0 +1,48 @@
+#!/bin/bash
+
+process_fun () {
+	echo "Please give this project a name: "
+	read project
+	echo "creating directory with the name $project"
+	cd /Users/gerardcasey/itn_repository/output
+	mkdir $project
+	location = pwd
+	echo "Created project folder in: $pwd"
+	echo "Part A starting..."
+	cd /Users/gerardcasey/gml-explorer/
+	cd /Users/gerardcasey/itn_repository/input/London/
+	echo "unzipping gml input file(s)"
+	gunzip *.gml.gz
+	cd /Users/gerardcasey/gml-explorer
+	echo "Parsing gml files using Mietek's gml-explorer"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roadnodes"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roadlinks"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roads"
+	cd /Users/gerardcasey/itn_repository/input/London/
+	echo "re-zipping gml file(s)"
+	gzip *.gml
+	cd /Users/gerardcasey/gml-explorer/out
+	echo "Zipping resulting json files"
+	gzip *.json
+	echo "Moving files to /output/"
+	cd /Users/gerardcasey/gml-explorer/directionality/
+	echo "Part A Complete: Nodes, links and roads have been parsed succesfully"
+	echo "Part B starting..."
+	python read_gml.py
+	python mod_json.py
+	cd /Users/gerardcasey/gml-explorer/out
+	rm roadklinks*.json.gz
+	cd /Users/gerardcasey/gml-explorer/directionality/
+	python gen_links.py
+	cd /Users/gerardcasey/gml-explorer/out
+	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
+	output_location = pwd
+	echo "Part B Complete: Directionality added succesfully"
+	echo "Files outputted to $output_location"
+	cd /Users/gerardcasey/itn_repository
+	git add .
+	git commit -a -m "Addition of files for project $project"
+	git push
+}
+
+process_fun

@@ -23,7 +23,7 @@ for directed_link in directed_links:
 
 
 for undirected_link in undirected_links:
-	undirected_link['restriction'] = False
+	undirected_link['restriction'] = "No Restriction"
 	undirected_link['orientation'] = None
 	generated_links.append(undirected_link)
 
@@ -32,11 +32,40 @@ print "# Reindexing"
 for count, generated_link in enumerate(generated_links):
 	generated_link['index'] = count
 
+def distance_calc(O_lat,O_lng,D_lat,D_lng):
+	return math.acos(math.cos(math.radians(90-D_lat)) * math.cos(math.radians(90-O_lat)) + math.sin(math.radians(90-D_lat)) *math.sin(math.radians(90-O_lat)) *math.cos(math.radians(D_lng-O_lng))) *6371000
+
+print "# Computing link length and adding to record"
+
+for generated_link in generated_links:
+	pairs = []
+	for i in range(len(link['polyline'])/2):
+		o = (link['polyline'][i*2],link['polyline'][i*2+1])
+		# Convert to lat/lng for metric distance output
+		o_c = transform(inProj,outProj,o[0],o[1])
+		# Re-order in form (lat,lng)
+		o_c = o_c[1],o_c[0]
+		pairs.append(o_c)
+	distance_total = 0
+	for i in range(len(pairs)-1):
+		try:
+			distance = distance_calc(pairs[i][0],pairs[i][1],pairs[i+1][0],pairs[i+1][1])
+		except ValueError,e:
+			# Debugging
+			# print(e, "for these coordinates")
+			# print (pairs[i][0],pairs[i][1],pairs[i+1][0],pairs[i+1][1])
+			# Round up to 1m
+			distance = 1
+		distance_total = distance_total + distance
+	link['length'] = distance_total
+
+print "# Link length added to record"
+
 print "# Splitting into smaller json.gz files"
 
 chunkSize = 100000
 for i in xrange(0, len(generated_links), chunkSize):
-	with gzip.open('./out/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
+	with gzip.open('../out/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
 		json.dump(generated_links[i:i+chunkSize], outfile, indent=0)
 
 print "# Calculating max/min coords"
@@ -72,7 +101,7 @@ stats = {
 	'min_lng': min_lng
 }
 
-with gzip.open('./out/stats.json.gz', 'w') as outfile:
+with gzip.open('../out/stats.json.gz', 'w') as outfile:
 	json.dump(stats, outfile)
 
 print "# Complete"

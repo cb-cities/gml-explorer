@@ -1,11 +1,13 @@
 import gzip
 from pprint import pprint
+from functools import partial
 import glob
 try:
     import simplejson as json
 except ImportError, e:
     import json
     print e
+import multiprocessing
 
 print " # Reading restricted_links_list file"
 
@@ -22,16 +24,20 @@ for di in dif:
 
 print "Number of One Way restrictions : ", len(restrictions)
 
-directed = []
-undirected = []
-total_length =[]
+print "Commencing matching restrictions to links files"
 
+# Create a list of file inputs
+list_files=[]
 for file in glob.glob("../out/roadlinks*.json.gz"):
+	list_files.append(file)
+
+# Function to iterate and match restrictions to links
+def link_restriction_match(directed_matches, undirected_matches, file):
+	local_directed = []
+	local_undirected = []
 	links_file = gzip.open(file)
 	links = json.load(links_file)
 	print "working on file : ", file
-	length = len(links)
-	total_length.append(length)
 	for link in links:
 		found = False
 		try:
@@ -39,28 +45,44 @@ for file in glob.glob("../out/roadlinks*.json.gz"):
 				if restriction['toid_data'][0]['toid'] == link['toid']:
 					data = {"link_restrictions":{"link": link,
 					"restriction": restriction}}
-					directed.append(data)
+					link['restriction'] = data
+					directed_matches.append(link)
 					found = True
 					break
 		finally:
 			if found == False:
-				undirected.append(link)
+				undirected_matches.append(link)
+				pass
+
+# Do in parallel
+if __name__ == '__main__':
+	manager = multiprocessing.Manager()
+	directed_matches = manager.list()
+	undirected_matches = manager.list()
+	matches = partial(link_restriction_match, directed_matches, undirected_matches)
+	print "Distributing work across CPU cores"
+	pool = multiprocessing.Pool(processes=8)
+	pool.map(matches, list_files)
+	pool.close()
+	pool.join()
+	print "Map processes complete"
+
+pprint(directed_matches)
+print ('break')
+pprint(undirected_matches)
 
 print "Directed links collated"
 
-print "Number of links: ", sum(total_length), "links accross ", len(total_length), " individual file(s)"
+# print "Number of links: ", str(sum(directed_matches) + sum(undirected_matches)), "links accross ", len(list_files), " individual file(s)"
 
 print " # writing to files in ./tmp/ "
 
-with gzip.open('./tmp/directed.json.gz','w') as outfile:
-	json.dump(directed,outfile,indent=2)
+with gzip.open('./tmp/directed_test.json.gz','w') as outfile:
+	json.dump(directed_matches,outfile,indent=2)
 
-with gzip.open('./tmp/undirected.json.gz','w') as outfile:
-	json.dump(undirected,outfile,indent=2)
+with gzip.open('./tmp/undirected_test.json.gz','w') as outfile:
+	json.dump(undirected_matches,outfile,indent=2)
 
-print "Number of matches found : ", len(directed)
+print "Number of matches found : ", len(directed_matches)
 
-print "unaffected links : ", len(undirected)
-
-with gzip.open('./tmp/stats.json.gz','w') as outfile:
-	json.dump(undirected,outfile,indent=2)
+print "unaffected links : ", len(undirected_matches)
