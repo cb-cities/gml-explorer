@@ -61,3 +61,6 @@ with gzip.open('./tmp/undirected.json.gz','w') as outfile:
 print "Number of matches found : ", len(directed)
 
 print "unaffected links : ", len(undirected)
+
+with gzip.open('./tmp/stats.json.gz','w') as outfile:
+	json.dump(undirected,outfile,indent=2)
