@@ -74,7 +74,7 @@ print "# Splitting into smaller json.gz files"
 chunkSize = 100000
 for i in xrange(0, len(generated_links), chunkSize):
 	with gzip.open('../out/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
-		json.dump(generated_links[i:i+chunkSize], outfile, indent=0)
+		json.dump(generated_links[i:i+chunkSize], outfile, indent=2)
 
 print "# Calculating max/min coords"
 

@@ -46,11 +46,9 @@ def link_restriction_match(directed_matches, undirected_matches, file):
 					link['restriction'] = restriction
 					directed_matches.append(link)
 					found = True
-					break
 		finally:
 			if found == False:
 				undirected_matches.append(link)
-				pass
 
 # Do in parallel
 if __name__ == '__main__':
