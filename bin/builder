@@ -36,9 +36,9 @@ process_fun () {
 	cd /Users/gerardcasey/gml-explorer/out
 	echo "Moving files to /output/"
 	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
-	output_location = pwd
 	echo "Part B Complete: Directionality added succesfully"
-	echo "Files outputted to $output_location"
+	echo "Files outputted to /itn_repository/output/$project"
+	echo "Commiting and pushing changes to github repo"
 	cd /Users/gerardcasey/itn_repository
 	git add .
 	git commit -a -m "Addition of files for project $project"
