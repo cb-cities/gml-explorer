@@ -43,7 +43,7 @@ def link_restriction_match(directed_matches, undirected_matches, file):
 		try:
 			for restriction in restrictions:
 				if restriction['toid_data'][0]['toid'] == link['toid']:
-					data = {"link_restrictions":{"link": link,
+					data = {"link_restrictions":{"link": list(link),
 					"restriction": restriction}}
 					link['restriction'] = data
 					directed_matches.append(link)
@@ -67,21 +67,20 @@ if __name__ == '__main__':
 	pool.join()
 	print "Map processes complete"
 
-pprint(directed_matches)
-print ('break')
-pprint(undirected_matches)
+directed = list(directed_matches)
+undirected = list(undirected_matches)
 
 print "Directed links collated"
 
-# print "Number of links: ", str(sum(directed_matches) + sum(undirected_matches)), "links accross ", len(list_files), " individual file(s)"
+print "Number of links: ", str(len(directed) + len(undirected)), "links accross ", len(list_files), " individual file(s)"
 
 print " # writing to files in ./tmp/ "
 
-with gzip.open('./tmp/directed_test.json.gz','w') as outfile:
-	json.dump(directed_matches,outfile,indent=2)
+with gzip.open('./tmp/directed.json.gz','w') as outfile:
+	json.dump(directed,outfile,indent=2)
 
-with gzip.open('./tmp/undirected_test.json.gz','w') as outfile:
-	json.dump(undirected_matches,outfile,indent=2)
+with gzip.open('./tmp/undirected.json.gz','w') as outfile:
+	json.dump(undirected,outfile,indent=2)
 
 print "Number of matches found : ", len(directed_matches)
 
