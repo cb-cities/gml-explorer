@@ -6,8 +6,7 @@ process_fun () {
 	echo "creating directory with the name $project"
 	cd /Users/gerardcasey/itn_repository/output
 	mkdir $project
-	location = pwd
-	echo "Created project folder in: $pwd"
+	echo "Created project folder in directory: $project"
 	echo "Part A starting..."
 	cd /Users/gerardcasey/gml-explorer/
 	cd /Users/gerardcasey/itn_repository/input/London/
