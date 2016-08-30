@@ -1,11 +1,9 @@
 import gzip
 from pprint import pprint
 import glob
-try:
-    import simplejson as json
-except ImportError, e:
-    import json
-    print e
+import simplejson as json
+import math
+from pyproj import Proj, transform
 
 directed_files = gzip.open("./tmp/directed.json.gz")
 directed_links = json.load(directed_files)
@@ -16,11 +14,18 @@ undirected_links = json.load(undirected_files)
 generated_links = []
 
 for directed_link in directed_links:
-	link = directed_link['link_restrictions']['link']
-	link['restriction'] = directed_link['link_restrictions']['restriction']['restriction']
-	link['orientation'] = directed_link['link_restrictions']['restriction']['toid_data'][0]['orientation']
+	link = {
+	"index": directed_link['index'],
+	"term": directed_link['term'],
+	"negativeNode": directed_link['negativeNode'],
+	"nature": directed_link['nature'],
+	"toid": directed_link['toid'],
+	"polyline": directed_link['polyline'],
+	"positiveNode": directed_link['positiveNode'],
+	"restriction": directed_link['restriction']['restriction'],
+	"orientation": directed_link['restriction']['toid_data'][0]['orientation']
+	}
 	generated_links.append(link)
-
 
 for undirected_link in undirected_links:
 	undirected_link['restriction'] = "No Restriction"
@@ -32,6 +37,9 @@ print "# Reindexing"
 for count, generated_link in enumerate(generated_links):
 	generated_link['index'] = count
 
+inProj = Proj(init='epsg:27700')
+outProj = Proj(init='epsg:4326')
+
 def distance_calc(O_lat,O_lng,D_lat,D_lng):
 	return math.acos(math.cos(math.radians(90-D_lat)) * math.cos(math.radians(90-O_lat)) + math.sin(math.radians(90-D_lat)) *math.sin(math.radians(90-O_lat)) *math.cos(math.radians(D_lng-O_lng))) *6371000
 
@@ -39,8 +47,8 @@ print "# Computing link length and adding to record"
 
 for generated_link in generated_links:
 	pairs = []
-	for i in range(len(link['polyline'])/2):
-		o = (link['polyline'][i*2],link['polyline'][i*2+1])
+	for i in range(len(generated_link['polyline'])/2):
+		o = (generated_link['polyline'][i*2],generated_link['polyline'][i*2+1])
 		# Convert to lat/lng for metric distance output
 		o_c = transform(inProj,outProj,o[0],o[1])
 		# Re-order in form (lat,lng)
@@ -57,7 +65,7 @@ for generated_link in generated_links:
 			# Round up to 1m
 			distance = 1
 		distance_total = distance_total + distance
-	link['length'] = distance_total
+	generated_link['length'] = distance_total
 
 print "# Link length added to record"
 
@@ -70,15 +78,13 @@ for i in xrange(0, len(generated_links), chunkSize):
 
 print "# Calculating max/min coords"
 
-print "# Calculating max/min coords"
+print "# Calculating max/min coords for sierra-charlie defs.js"
 
 nodes_files = gzip.open("../out/roadnodes1.json.gz")
 nodes = json.load(nodes_files)
 
 lats = []
 lngs = []
-
-pprint(nodes[0])
 
 for node in nodes:
 	lat = node['point'][0]
@@ -90,9 +96,6 @@ max_lat = max(lats)
 max_lng = max(lngs)
 min_lat = min(lats)
 min_lng = min(lngs)
-
-print max_lat, max_lng
-print min_lat, min_lng
 
 stats = {
 	'max_lat': max_lat,

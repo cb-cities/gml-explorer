@@ -2,20 +2,6 @@ import gzip
 import simplejson as json
 import glob
 
-directed_files_t = gzip.open("directed_test.json.gz")
-directed_t = json.load(directed_files_t)
-
-undirected_files_t = gzip.open("undirected_test.json.gz")
-undirected_t = json.load(undirected_files_t)
-
-print 'test output'
-print(len(directed_t))
-
-print(len(undirected_t))
-
-sums = len(directed_t) + len(undirected_t)
-print(sums)
-
 directed_files = gzip.open("directed.json.gz")
 directed = json.load(directed_files)
 

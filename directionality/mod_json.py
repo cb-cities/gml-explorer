@@ -43,9 +43,7 @@ def link_restriction_match(directed_matches, undirected_matches, file):
 		try:
 			for restriction in restrictions:
 				if restriction['toid_data'][0]['toid'] == link['toid']:
-					data = {"link_restrictions":{"link": list(link),
-					"restriction": restriction}}
-					link['restriction'] = data
+					link['restriction'] = restriction
 					directed_matches.append(link)
 					found = True
 					break
