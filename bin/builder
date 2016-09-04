@@ -29,12 +29,11 @@ process_fun () {
 	python read_gml.py
 	python mod_json.py
 	cd /Users/gerardcasey/gml-explorer/out
-	rm roadklinks*.json.gz
 	cd /Users/gerardcasey/gml-explorer/directionality/
 	python gen_links.py
 	cd /Users/gerardcasey/gml-explorer/out
 	echo "Moving files to /output/"
-	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
+	cp *.json.gz /Users/gerardcasey/itn_repository/output/$project
 	echo "Part B Complete: Directionality added succesfully"
 	echo "Files outputted to /itn_repository/output/$project"
 	echo "Commiting and pushing changes to github repo"

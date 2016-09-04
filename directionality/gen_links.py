@@ -15,26 +15,33 @@ generated_links = []
 
 for directed_link in directed_links:
 	link = {
-	"index": directed_link['index'],
-	"term": directed_link['term'],
 	"negativeNode": directed_link['negativeNode'],
-	"nature": directed_link['nature'],
 	"toid": directed_link['toid'],
+	"term": directed_link['term'],
 	"polyline": directed_link['polyline'],
 	"positiveNode": directed_link['positiveNode'],
+	"nature": directed_link['nature'],
 	"restriction": directed_link['restriction']['restriction'],
 	"orientation": directed_link['restriction']['toid_data'][0]['orientation']
 	}
 	generated_links.append(link)
 
 for undirected_link in undirected_links:
-	undirected_link['restriction'] = "No Restriction"
-	undirected_link['orientation'] = None
-	generated_links.append(undirected_link)
+	link = {
+	"negativeNode": undirected_link['negativeNode'],
+	"toid": undirected_link['toid'],
+	"term": undirected_link['term'],
+	"polyline": undirected_link['polyline'],
+	"positiveNode": undirected_link['positiveNode'],
+	"nature": undirected_link['nature'],
+	"restriction" : "No Restriction",
+	"orientation" : None
+	}
+	generated_links.append(link)
 
 print "# Reindexing"
 
-for count, generated_link in enumerate(generated_links):
+for count, generated_link in enumerate(generated_links, start=1):
 	generated_link['index'] = count
 
 inProj = Proj(init='epsg:27700')
@@ -73,8 +80,8 @@ print "# Splitting into smaller json.gz files"
 
 chunkSize = 100000
 for i in xrange(0, len(generated_links), chunkSize):
-	with gzip.open('../out/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
-		json.dump(generated_links[i:i+chunkSize], outfile, indent=2)
+	with gzip.open('../results/roadlinks' + str((i//chunkSize)+1) + '.json.gz', 'w') as outfile:
+		json.dump(generated_links[i:i+chunkSize], outfile, indent =2)
 
 print "# Calculating max/min coords"
 
