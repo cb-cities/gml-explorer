@@ -1,6 +1,6 @@
 .cabal-sandbox
 cabal.sandbox.config
-dist
 out
+dist
 .DS_Store
-
+*.pyc

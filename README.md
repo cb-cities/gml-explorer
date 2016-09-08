@@ -1,7 +1,24 @@
 _gml-explorer_
 ==============
 
-Usage
+Automated Usage
+-----
+
+You can now use a bash script to automate the generation of node, links and road files from a given `gml` input. This also features the `python` directionality implementation which adds road restriction information. The directionality implementation makes use of multiple cores.
+
+`cd gml-explorer/bin`
+
+`./builder`
+
+### Change input
+Presently, this builds from the `itn_repository` repo. To change the `gml` file input, edit the `builder` bash script. Change the given directory relative to the `gml-explorer` directory:
+
+`make run ARGS="/path/to/directory/mastermap-itn_1445496_0.gml roadnodes"`
+
+NOTE: To reduce bandwith demands, the `gml` files are compressed using `gzip`. To compress a `.gml` using the following command: `gzip *.gml`
+
+
+Manual Usage
 -----
 
 First, download the project source and data files:
