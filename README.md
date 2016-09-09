@@ -1,6 +1,16 @@
 _gml-explorer_
 ==============
 
+
+Features
+--------
+
+- Road nodes
+- Road links
+	- Direction
+	- Length
+- Roads
+
 Automated Usage
 -----
 

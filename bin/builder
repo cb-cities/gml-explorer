@@ -14,9 +14,9 @@ process_fun () {
 	gunzip *.gml.gz
 	cd /Users/gerardcasey/gml-explorer
 	echo "Parsing gml files using Mietek's gml-explorer"
-	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roadnodes"
-	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roadlinks"
-	make run ARGS="../itn_repository/input/London/mastermap-itn_1445496_0.gml roads"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_870993_0.gml roadnodes"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_870993_0.gml roadlinks"
+	make run ARGS="../itn_repository/input/London/mastermap-itn_870993_0.gml roads"
 	cd /Users/gerardcasey/itn_repository/input/London/
 	echo "re-zipping gml file(s)"
 	gzip *.gml

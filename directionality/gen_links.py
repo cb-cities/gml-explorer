@@ -41,7 +41,7 @@ for undirected_link in undirected_links:
 
 print "# Reindexing"
 
-for count, generated_link in enumerate(generated_links, start=1):
+for count, generated_link in enumerate(generated_links, start=0):
 	generated_link['index'] = count
 
 inProj = Proj(init='epsg:27700')
