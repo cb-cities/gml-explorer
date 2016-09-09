@@ -46,7 +46,9 @@ for elem in e.findall("osgb:roadInformationMember", namespaces):
 				"toid_data": toids}
 				results.append(data)
 				# print data
-				
+
+print 'extracted restrictions'
+
 print 'exporting to ./tmp/restricted_links_list.json.gz file'
 
 with gzip.open('./tmp/restricted_links_list.json.gz', 'w') as outfile:

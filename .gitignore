@@ -1,6 +1,8 @@
 .cabal-sandbox
 cabal.sandbox.config
+results
 out
 dist
 .DS_Store
 *.pyc
+directionality/tmp/
