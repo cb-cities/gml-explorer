@@ -28,12 +28,14 @@ process_fun () {
 	echo "Part B starting..."
 	python read_gml.py
 	python mod_json.py
-	cd /Users/gerardcasey/gml-explorer/out
 	cd /Users/gerardcasey/gml-explorer/directionality/
 	python gen_links.py
-	cd /Users/gerardcasey/gml-explorer/out
+	cd /Users/gerardcasey/gml-explorer/out/
+	rm roadlinks*.json.gz
+	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
+	cd /Users/gerardcasey/gml-explorer/results/
 	echo "Moving files to /output/"
-	cp *.json.gz /Users/gerardcasey/itn_repository/output/$project
+	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
 	echo "Part B Complete: Directionality added succesfully"
 	echo "Files outputted to /itn_repository/output/$project"
 	echo "Commiting and pushing changes to github repo"
