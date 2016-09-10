@@ -1,14 +1,6 @@
 #!/bin/bash
 
 process_fun () {
-	echo "Please give this project a name: "
-	read project
-	echo "creating directory with the name $project"
-	cd /Users/gerardcasey/itn_repository/output
-	mkdir $project
-	echo "Created project folder in directory: $project"
-	echo "Part A starting..."
-	cd /Users/gerardcasey/gml-explorer/
 	cd /Users/gerardcasey/itn_repository/input/London/
 	echo "unzipping gml input file(s)"
 	gunzip *.gml.gz
@@ -21,28 +13,7 @@ process_fun () {
 	echo "re-zipping gml file(s)"
 	gzip *.gml
 	cd /Users/gerardcasey/gml-explorer/out
-	echo "Zipping resulting json files"
 	gzip *.json
-	cd /Users/gerardcasey/gml-explorer/directionality/
-	echo "Part A Complete: Nodes, links and roads have been parsed succesfully"
-	echo "Part B starting..."
-	python read_gml.py
-	python mod_json.py
-	cd /Users/gerardcasey/gml-explorer/directionality/
-	python gen_links.py
-	cd /Users/gerardcasey/gml-explorer/out/
-	rm roadlinks*.json.gz
-	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
-	cd /Users/gerardcasey/gml-explorer/results/
-	echo "Moving files to /output/"
-	mv *.json.gz /Users/gerardcasey/itn_repository/output/$project
-	echo "Part B Complete: Directionality added succesfully"
-	echo "Files outputted to /itn_repository/output/$project"
-	echo "Commiting and pushing changes to github repo"
-	cd /Users/gerardcasey/itn_repository
-	git add .
-	git commit -a -m "Addition of files for project $project"
-	git push
 }
 
 process_fun
