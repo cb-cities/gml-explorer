@@ -7,18 +7,18 @@ Features
 
 - Road nodes
 - Road links
-	- Direction
-	- Length
 - Roads
 
 Automated Usage
 -----
 
-You can now use a bash script to automate the generation of node, links and road files from a given `gml` input.
+You can now use a bash script to automate the generation of `roadnode`, `roadlinks` and `road` files from a given `gml` input.
 
 `bin/builder`
 
 The `builder` file must be edited with the path for a given `gml` input file.
+
+This bash script reads a compressed `gml.gz` input file and outputs `.json.gz` files. 
 
 ### Change input
 Presently, this builds from the `itn_repository` repo. To change the `gml` file input, edit the `builder` bash script. Change the given directory relative to the `gml-explorer` directory:
