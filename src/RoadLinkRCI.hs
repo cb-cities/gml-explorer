@@ -26,6 +26,7 @@ data RoadLinkRCI = RLR
     , rlrRoadID       :: Maybe Double  --Int
     , rlrStCha        :: Maybe Double
     , rlrEndCh        :: Maybe Double
+    , rlrLane         :: Maybe Text
     , rlrRCI          :: Maybe Double
     , rlrLV3          :: Maybe Double
     , rlrLV10         :: Maybe Double
@@ -55,6 +56,7 @@ instance ToJSON RoadLinkRCI where
         , "road_id"       .= rlrRoadID
         , "st_cha"        .= rlrStCha
         , "end_ch"        .= rlrEndCh
+        , "lane"          .= rlrLane
         , "rci"          .= rlrRCI
         , "lv3"          .= rlrLV3
         , "lv10"         .= rlrLV10
@@ -82,6 +84,7 @@ newRLR index toid = RLR
     , rlrRoadID       = Nothing
     , rlrStCha        = Nothing
     , rlrEndCh        = Nothing
+    , rlrLane         = Nothing
     , rlrRCI          = Nothing
     , rlrLV3          = Nothing
     , rlrLV10         = Nothing
@@ -170,6 +173,11 @@ roadLink rlr (StartElement "ogr:end_ch" _)
         await (endch none rlr)
   | otherwise =
         error "roadLink: expect 1 ogr:end_ch for this link in total"
+roadLink rlr (StartElement "ogr:lane" _)
+  | rlrLane rlr == Nothing =
+        await (lane none rlr)
+  | otherwise =
+        error "roadLink: expect 1 ogr:lane for this link in total"
 roadLink rlr (StartElement "ogr:rci" _)
   | rlrRCI rlr == Nothing =
         await (rci none rlr)
@@ -299,6 +307,14 @@ endch parts rlr (CharacterData part) =
   await (endch (parts <> part) rlr)
 endch parts rlr _ =
   await (endch parts rlr)
+
+lane :: Builder -> RoadLinkRCI -> Transition
+lane parts rlr (EndElement "ogr:lane") =
+    await (roadLink rlr {rlrLane = Just (build parts)})
+lane parts rlr (CharacterData part) =
+    await (lane (parts <> part) rlr)
+lane parts rlr _ =
+    await (lane parts rlr)
 
 rci :: Builder -> RoadLinkRCI -> Transition
 rci parts rlr (EndElement "ogr:rci") =
