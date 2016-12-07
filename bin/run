@@ -1,0 +1,19 @@
+#!/bin/bash
+
+process_fun () {
+	cd $HOME/Aoife/data_repositories/road_network/input/London/
+	echo "unzipping gml input file(s)"
+	gunzip *.gml.gz
+	cd $HOME/Aoife/gml-explorer
+	echo "Parsing gml files using Mietek's gml-explorer"
+	make run ARGS="$HOME/Aoife/data_repositories/road_network/input/London/mastermap-itn_870993_0.gml roadnodes"
+	make run ARGS="$HOME/Aoife/data_repositories/road_network/input/London/mastermap-itn_870993_0.gml roadlinks"
+	make run ARGS="$HOME/Aoife/data_repositories/road_network/input/London/mastermap-itn_870993_0.gml roads"
+	cd $HOME/Aoife/data_repositories/road_network/input/London/
+	echo "re-zipping gml file(s)"
+	gzip *.gml
+	cd $HOME/Aoife/gml-explorer/out
+	gzip *.json
+}
+
+process_fun
