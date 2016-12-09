@@ -105,6 +105,34 @@ Command        | Description
 `roadlinkrci` | Output OS RoadLinkRCI geometry
 
 
+##Docker image
+
+
+Taken from Krishna Kumar and cb-geo
+
+Tools
+
+- GHC 8.0.1
+- Cabal 1.24
+- GCC 6
+- Node 6.3.1
+
+### Creating an image from the docker file
+
+To build an image from docker file run as root 
+`docker build -t "cbgeo/ca-abm:latest" /path/to/Dockerfile`
+
+To launch the docker container, `run docker run -ti cbgeo/ca-abm:latest /bin/bash` 
+
+Run the container with local volume mounted
+
+`docker run -ti -v /home/<user>/<mounted-folder>/:/<path-in-container> cbgeo/ca-abm:latest /bin/bash`
+
+Exposing ports
+
+To connect to a particular port (for e.g., 3000) in docker container to port 3000 in localhost: `docker run -ti -p 3000:3000 cbgeo/ca-abm`
+
+
 About
 -----
 
