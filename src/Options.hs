@@ -1,6 +1,7 @@
 module Options where
 
-import Options.Applicative ((<>), Parser)
+import Data.Monoid ((<>))
+import Options.Applicative (Parser)
 import qualified Options.Applicative as P
 
 
