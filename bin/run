@@ -13,7 +13,7 @@ process_fun () {
 	echo "re-zipping gml file(s)"
 	gzip *.gml
 	cd $HOME/Aoife/gml-explorer/out
-	echo "Gzipping results files (.json.gz)"
+	echo "Gzipping results files .json.gz"
 	gzip *.json
 }
 
